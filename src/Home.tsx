@@ -14,7 +14,6 @@ const theme = createTheme();
 export const Home = () => {
   const currentUser = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [email, setEmail] = useState<string | null>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +22,6 @@ export const Home = () => {
     }
     if (currentUser) {
       setIsLoading(false);
-      setEmail(currentUser.email);
     }
   }, [currentUser]);
 
@@ -52,7 +50,7 @@ export const Home = () => {
                 Firebase Authentication Sandbox on Web
               </Typography>
               <Typography component="h1" variant="h5" sx={{ mt: 2 }}>
-                Welcome, {email}
+                Welcome, {currentUser?.email}
               </Typography>
               <Box component="div" sx={{ mt: 5 }}>
                 <Button href="/signup" fullWidth variant="contained">
