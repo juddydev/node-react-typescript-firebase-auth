@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { AuthProvider } from "./AuthContext";
 import { Home } from "./Home";
+import { PasswordReset } from "./PasswordReset";
 import { SignIn } from "./SignIn";
 import { SignUp } from "./SignUp";
 
@@ -25,6 +26,7 @@ export const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/password-reset" element={<PasswordReset />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

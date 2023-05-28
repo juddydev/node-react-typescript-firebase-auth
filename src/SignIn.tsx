@@ -94,6 +94,13 @@ export const SignIn = () => {
                   handleChangePassword(event);
                 }}
               />
+              <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
+                <Grid item>
+                  <Link href="/password-reset" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+              </Grid>
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
                 Sign In
               </Button>
