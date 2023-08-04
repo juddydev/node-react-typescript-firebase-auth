@@ -1,19 +1,18 @@
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { sendPasswordResetEmail } from "@firebase/auth";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
-import { Login } from "@mui/icons-material";
-import { CssBaseline, Avatar, Typography, TextField, Button, Grid, Link } from "@mui/material";
+import { LockReset } from "@mui/icons-material";
+import { CssBaseline, Avatar, Typography, TextField, Button } from "@mui/material";
 import { Container, Box } from "@mui/system";
 
 import { AuthContext } from "./AuthContext";
 import { auth } from "./firebase";
 import { PageProgress } from "./PageProgress";
 
-export const SignIn = () => {
+export const PasswordReset = () => {
   const currentUser = useContext(AuthContext);
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
@@ -30,20 +29,18 @@ export const SignIn = () => {
     setEmail(event.currentTarget.value);
   };
 
-  const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value);
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await sendPasswordResetEmail(auth, email);
     } catch (error) {
       console.error(error);
+      alert("Failed to send password reset email.");
       return;
     }
 
+    alert("Password reset email sent successfully.");
     navigate("/");
   };
 
@@ -63,12 +60,12 @@ export const SignIn = () => {
             }}
           >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <Login />
+              <LockReset />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              Reset your password
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
               <TextField
                 required
                 fullWidth
@@ -81,36 +78,9 @@ export const SignIn = () => {
                   handleChangeEmail(event);
                 }}
               />
-              <TextField
-                sx={{ mt: 3 }}
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChangePassword(event);
-                }}
-              />
-              <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
-                <Grid item>
-                  <Link href="/password-reset" variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-              </Grid>
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-                Sign In
+                Send password reset email
               </Button>
-              <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
-                <Grid item>
-                  <Link href="/signup" variant="body2">
-                    Don't have an account? Sign Up
-                  </Link>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Container>
