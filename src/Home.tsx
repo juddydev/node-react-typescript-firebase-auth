@@ -50,10 +50,10 @@ export const Home = () => {
             </Typography>
             <Box component="div" sx={{ mt: 5 }}>
               <Button href="/signup" fullWidth variant="contained">
-                Sign Up
+                Sign up
               </Button>
               <Button onClick={signOut} fullWidth variant="contained" sx={{ mt: 3 }}>
-                Sign Out
+                Sign out
               </Button>
             </Box>
           </Box>

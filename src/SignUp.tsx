@@ -56,7 +56,7 @@ export const SignUp = () => {
             required
             fullWidth
             id="email"
-            label="Email Address"
+            label="Email"
             name="email"
             autoComplete="email"
             autoFocus
@@ -78,7 +78,7 @@ export const SignUp = () => {
             }}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            Sign Up
+            Sign up
           </Button>
           <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
             <Grid item>
