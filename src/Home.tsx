@@ -43,7 +43,7 @@ export const Home = () => {
             }}
           >
             <Typography component="h1" variant="h5" fontWeight="bold">
-              Firebase Authentication Sandbox on Web
+              Firebase Authentication Sample on Web
             </Typography>
             <Typography component="h1" variant="h5" sx={{ mt: 2 }}>
               Welcome, {currentUser?.email}

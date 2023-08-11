@@ -1,6 +1,6 @@
-# Firebase Authentication Sandbox on Web
+# Firebase Authentication Sample on Web
 
-Sandbox web application for Firebase Authentication developed using Node.js, React, and TypeScript.  
+Sample web application for Firebase Authentication developed using Node.js, React, and TypeScript.  
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Requirements
@@ -27,7 +27,7 @@ The recommended extensions for Visual Studio Code are listed in [.vscode/extensi
 - Clone this repository.
 
 ```
-git clone https://github.com/kwn1125/node-react-typescript-firebase-auth-sandbox.git <project_directory>
+git clone https://github.com/kwn1125/node-react-typescript-firebase-auth.git <project_directory>
 ```
 
 - Install dependencies.
