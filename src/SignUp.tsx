@@ -1,6 +1,8 @@
 import { createUserWithEmailAndPassword } from "@firebase/auth";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import { PersonAddAlt1 } from "@mui/icons-material";
 import { CssBaseline, Avatar, Typography, TextField, Button, Grid, Link } from "@mui/material";
@@ -8,26 +10,39 @@ import { Container, Box } from "@mui/system";
 
 import { auth } from "./firebase";
 
+const formSchema = z.object({
+  email: z
+    .string()
+    .nonempty({ message: "Email is required" })
+    .email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .nonempty({ message: "Password is required" })
+    .min(8, { message: "Password must be at least 8 characters long" }),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
+
 export const SignUp = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const navigate = useNavigate();
 
-  const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.currentTarget.value);
-  };
-
-  const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit = async (formValues: FormSchema) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await createUserWithEmailAndPassword(auth, formValues.email, formValues.password);
     } catch (error) {
       console.error(error);
+      alert("Failed to sign up.");
       return;
     }
 
@@ -51,31 +66,29 @@ export const SignUp = () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <TextField
             required
             fullWidth
             id="email"
             label="Email"
-            name="email"
             autoComplete="email"
             autoFocus
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              handleChangeEmail(event);
-            }}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            {...register("email")}
           />
           <TextField
             sx={{ mt: 3 }}
             required
             fullWidth
-            name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="new-password"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              handleChangePassword(event);
-            }}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            {...register("password")}
           />
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
             Sign up
