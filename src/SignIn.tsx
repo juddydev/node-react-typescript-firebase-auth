@@ -1,6 +1,9 @@
-import { signInWithEmailAndPassword } from "@firebase/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useContext, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import { Login } from "@mui/icons-material";
 import { CssBaseline, Avatar, Typography, TextField, Button, Grid, Link } from "@mui/material";
@@ -10,11 +13,27 @@ import { AuthContext } from "./AuthContext";
 import { auth } from "./firebase";
 import { PageProgress } from "./PageProgress";
 
+const formSchema = z.object({
+  email: z.string().nonempty({ message: "Email is required" }),
+  password: z.string().nonempty({ message: "Password is required" }),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
+
 export const SignIn = () => {
   const currentUser = useContext(AuthContext);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,21 +45,12 @@ export const SignIn = () => {
     }
   }, [currentUser]);
 
-  const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.currentTarget.value);
-  };
-
-  const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit = async (formValues: FormSchema) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, formValues.email, formValues.password);
     } catch (error) {
       console.error(error);
+      alert("Failed to sign in.");
       return;
     }
 
@@ -68,31 +78,29 @@ export const SignIn = () => {
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 3 }}>
               <TextField
                 required
                 fullWidth
                 id="email"
                 label="Email"
-                name="email"
                 autoComplete="email"
                 autoFocus
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChangeEmail(event);
-                }}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                {...register("email")}
               />
               <TextField
                 sx={{ mt: 3 }}
                 required
                 fullWidth
-                name="password"
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChangePassword(event);
-                }}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                {...register("password")}
               />
               <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
                 <Grid item>
