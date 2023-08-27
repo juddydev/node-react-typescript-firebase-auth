@@ -1,6 +1,9 @@
 import { sendPasswordResetEmail } from "@firebase/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import { LockReset } from "@mui/icons-material";
 import { CssBaseline, Avatar, Typography, TextField, Button } from "@mui/material";
@@ -10,10 +13,25 @@ import { AuthContext } from "./AuthContext";
 import { auth } from "./firebase";
 import { PageProgress } from "./PageProgress";
 
+const formSchema = z.object({
+  email: z.string().nonempty({ message: "Email is required" }),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
+
 export const PasswordReset = () => {
   const currentUser = useContext(AuthContext);
-  const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,15 +43,9 @@ export const PasswordReset = () => {
     }
   }, [currentUser]);
 
-  const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.currentTarget.value);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit = async (formValues: FormSchema) => {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, formValues.email);
     } catch (error) {
       console.error(error);
       alert("Failed to send password reset email.");
@@ -65,18 +77,17 @@ export const PasswordReset = () => {
             <Typography component="h1" variant="h5">
               Reset your password
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <TextField
                 required
                 fullWidth
                 id="email"
                 label="Email"
-                name="email"
                 autoComplete="email"
                 autoFocus
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChangeEmail(event);
-                }}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                {...register("email")}
               />
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
                 Send password reset email

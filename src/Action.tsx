@@ -1,6 +1,9 @@
 import { verifyPasswordResetCode, confirmPasswordReset } from "@firebase/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { z } from "zod";
 
 import { LockReset } from "@mui/icons-material";
 import { CssBaseline, Avatar, Typography, TextField, Button } from "@mui/material";
@@ -8,10 +11,28 @@ import { Container, Box } from "@mui/system";
 
 import { auth } from "./firebase";
 
+const formSchema = z.object({
+  password: z
+    .string()
+    .nonempty({ message: "Password is required" })
+    .min(8, { message: "Password must be at least 8 characters long" }),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
+
 export const Action = () => {
   const [mode, setMode] = useState<string>("");
   const [oobCode, setOobCode] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+    },
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,13 +52,7 @@ export const Action = () => {
     return mode === "resetPassword";
   };
 
-  const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.currentTarget.value);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit = async (formValues: FormSchema) => {
     try {
       await verifyPasswordResetCode(auth, oobCode);
     } catch (error) {
@@ -47,7 +62,7 @@ export const Action = () => {
     }
 
     try {
-      await confirmPasswordReset(auth, oobCode, password);
+      await confirmPasswordReset(auth, oobCode, formValues.password);
     } catch (error) {
       console.error(error);
       alert("Password reset failed.");
@@ -77,18 +92,17 @@ export const Action = () => {
             <Typography component="h1" variant="h5">
               Reset your password
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <TextField
                 required
                 fullWidth
-                name="password"
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="new-password"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  handleChangePassword(event);
-                }}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                {...register("password")}
               />
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
                 Reset your password
