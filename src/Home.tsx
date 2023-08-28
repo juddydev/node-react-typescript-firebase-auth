@@ -24,7 +24,6 @@ export const Home = () => {
 
   const signOut = () => {
     auth.signOut();
-    navigate("/signin");
   };
 
   return (

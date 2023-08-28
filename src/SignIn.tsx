@@ -1,16 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithRedirect } from "firebase/auth";
 import { useContext, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { z } from "zod";
 
-import { Login } from "@mui/icons-material";
+import { Login, Google } from "@mui/icons-material";
 import { CssBaseline, Avatar, Typography, TextField, Button, Grid, Link } from "@mui/material";
 import { Container, Box } from "@mui/system";
 
 import { AuthContext } from "./AuthContext";
-import { auth } from "./firebase";
+import { auth, googleAuthProvider } from "./firebase";
 import { PageProgress } from "./PageProgress";
 
 const formSchema = z.object({
@@ -51,10 +51,16 @@ export const SignIn = () => {
     } catch (error) {
       console.error(error);
       alert("Failed to sign in.");
-      return;
     }
+  };
 
-    navigate("/");
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithRedirect(auth, googleAuthProvider);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to sign in.");
+    }
   };
 
   return (
@@ -117,6 +123,19 @@ export const SignIn = () => {
                   <Link href="/signup" variant="body2">
                     Don't have an account? Sign up
                   </Link>
+                </Grid>
+              </Grid>
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+                sx={{ mt: 2 }}
+              >
+                <Grid item sx={{ mt: 2 }}>
+                  <Button variant="outlined" startIcon={<Google />} onClick={signInWithGoogle}>
+                    Sign in with Google
+                  </Button>
                 </Grid>
               </Grid>
             </Box>
