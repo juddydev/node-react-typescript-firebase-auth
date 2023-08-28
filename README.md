@@ -15,6 +15,7 @@ This application uses Firebase Authentication.
 
 1. Create a Firebase project by following the instructions in the [Firebase docs](https://firebase.google.com/docs/web/setup#create-project).
 1. Enable Email/Password sign-in by following steps 2 and 3 the instructions in the [Firebase docs](https://firebase.google.com/docs/auth/web/password-auth#before_you_begin).
+1. Enable Google sign-in by following steps 2 the instructions in the [Firebase docs](https://firebase.google.com/docs/auth/web/google-signin#before_you_begin).
 
 ## Recommended
 
