@@ -51,10 +51,7 @@ export const SignIn = () => {
     } catch (error) {
       console.error(error);
       alert("Failed to sign in.");
-      return;
     }
-
-    navigate("/");
   };
 
   const signInWithGoogle = async () => {
