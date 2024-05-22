@@ -1,8 +1,6 @@
-# Firebase Authentication Sample on Web
+# Firebase Authentication on Web
 
 Sample web application for Firebase Authentication developed using Node.js, React, and TypeScript.  
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Requirements
 
 - [Volta](https://volta.sh/)
